@@ -1,0 +1,25 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build release binary
+        run: cargo build --release
+      - name: Package zip
+        shell: pwsh
+        run: |
+          mkdir dist
+          Copy-Item target/release/s75_led_studio.exe dist/
+          Copy-Item protocol.json dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s75_led_studio_windows
+          path: dist/
